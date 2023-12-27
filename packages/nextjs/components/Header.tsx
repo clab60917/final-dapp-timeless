@@ -11,11 +11,16 @@ type HeaderMenuLink = {
   href: string;
   icon?: React.ReactNode;
 };
+//Debut du header
 
 export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
+  },
+  {
+    label: "Marketplace",
+    href: "/marketplace",
   },
   {
     label: "Debug Contracts",
