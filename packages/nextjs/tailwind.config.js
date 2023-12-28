@@ -2,10 +2,16 @@
 module.exports = {
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
   plugins: [require("daisyui")],
-  darkTheme: "scaffoldEthDark",
+  darkTheme: "synthwave",
   // DaisyUI theme colors
   daisyui: {
     themes: [
+      "ligh",
+      "synthwave",
+      "light",
+      "dark",
+      "night",
+      "fantasy",
       {
         scaffoldEth: {
           primary: "#93BBFB",

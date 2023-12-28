@@ -1,13 +1,86 @@
-import React, { useState } from 'react';
-import 'tailwindcss/tailwind.css';
+import React, { useState } from "react";
+import "tailwindcss/tailwind.css";
+import { MetaHeader } from "~~/components/MetaHeader";
 
-const nfts = new Array(10).fill(null).map((_, index) => ({
-  id: index + 1,
-  title: `NFT ${index + 1}`,
-  description: `Description for NFT ${index + 1}`,
-  image: `path_to_image_${index + 1}`,
-  price: `${(index * 0.3 + 0.5).toFixed(1)} ETH`
-}));
+const nfts = [
+  {
+    id: 1,
+    title: "Grand Seiko",
+    description: "Spring Drive GMT",
+    image: "packages/nextjs/public/img1.png", // Remplacez par le chemin d'accès après l'upload
+    price: "5.0 ETH",
+  },
+  {
+    id: 2,
+    title: "Mido",
+    description: "Baroncelli Heritage Automatic",
+    image: "/path/to/img2.png", // Remplacez par le chemin d'accès après l'upload
+    price: "2.5 ETH",
+  },
+  {
+    id: 3,
+    title: "Rolex",
+    description: "Oyster Perpetual Datejust",
+    image: "/path/to/img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    price: "12.0 ETH",
+  },
+  {
+    id: 1,
+    title: "Grand Seiko",
+    description: "Spring Drive GMT",
+    image: "packages/nextjs/public/img1.png", // Remplacez par le chemin d'accès après l'upload
+    price: "5.0 ETH",
+  },
+  {
+    id: 2,
+    title: "Mido",
+    description: "Baroncelli Heritage Automatic",
+    image: "/path/to/img2.png", // Remplacez par le chemin d'accès après l'upload
+    price: "2.5 ETH",
+  },
+  {
+    id: 3,
+    title: "Rolex",
+    description: "Oyster Perpetual Datejust",
+    image: "/path/to/img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    price: "12.0 ETH",
+  },
+  {
+    id: 1,
+    title: "Grand Seiko",
+    description: "Spring Drive GMT",
+    image: "packages/nextjs/public/img1.png", // Remplacez par le chemin d'accès après l'upload
+    price: "5.0 ETH",
+  },
+  {
+    id: 2,
+    title: "Mido",
+    description: "Baroncelli Heritage Automatic",
+    image: "/path/to/img2.png", // Remplacez par le chemin d'accès après l'upload
+    price: "2.5 ETH",
+  },
+  {
+    id: 3,
+    title: "Rolex",
+    description: "Oyster Perpetual Datejust",
+    image: "/path/to/img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    price: "12.0 ETH",
+  },
+  {
+    id: 3,
+    title: "Rolex",
+    description: "Oyster Perpetual Datejust",
+    image: "/path/to/img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    price: "12.0 ETH",
+  },
+  {
+    id: 3,
+    title: "Rolex",
+    description: "Oyster Perpetual Datejust",
+    image: "/path/to/img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    price: "12.0 ETH",
+  },
+];
 
 const NFTCard = ({ nft }) => (
   <div className="bg-white dark:bg-gray-700 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out p-4">
@@ -29,7 +102,8 @@ const Marketplace = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div className={darkMode ? "dark" : ""}>
+      <MetaHeader />
       <div className="bg-gray-800 dark:bg-gray-200 min-h-screen">
         <div className="container mx-auto py-8 px-4">
           <button onClick={() => setDarkMode(!darkMode)} className="text-white dark:text-gray-800">
@@ -37,7 +111,9 @@ const Marketplace = () => {
           </button>
           <h1 className="text-4xl font-bold text-white dark:text-gray-900 mb-8">NFT Marketplace</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {nfts.map(nft => <NFTCard key={nft.id} nft={nft} />)}
+            {nfts.map(nft => (
+              <NFTCard key={nft.id} nft={nft} />
+            ))}
           </div>
         </div>
       </div>
