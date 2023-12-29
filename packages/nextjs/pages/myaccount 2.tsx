@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getOwnedNFTs } from "../api";
 
 // Remplacez '../api' par le chemin vers votre fichier d'API
 
