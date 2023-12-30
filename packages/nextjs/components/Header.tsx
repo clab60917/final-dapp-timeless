@@ -105,7 +105,7 @@ export const Header = () => {
           )}
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
+          <div className={`flex relative w-10 h-10 ${darkTheme ? "filter invert(1) brightness(0.8)" : ""}`}>
             <Image
               alt="Logo"
               className="cursor-pointer"
@@ -113,10 +113,11 @@ export const Header = () => {
               src={darkTheme ? "/logos/logo_blanc.png" : "/logos/logo_noir.png"}
             />
           </div>
-          <div className="flex flex-col">
+          <div className={`flex flex-col ${darkTheme ? "text-white" : "text-black"}`}>
             <span className="font-bold leading-tight">TimeLess</span>
           </div>
         </Link>
+
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
         </ul>

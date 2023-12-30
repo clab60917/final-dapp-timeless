@@ -7,83 +7,84 @@ const nfts = [
     id: 1,
     title: "Grand Seiko",
     description: "Spring Drive GMT",
-    image: "img1.png", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img1.png", // Remplacez par le chemin d'accès après l'upload
     price: "5.0 ETH",
   },
   {
     id: 2,
     title: "Mido",
     description: "Baroncelli Heritage Automatic",
-    image: "img2.webp", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img2.webp", // Remplacez par le chemin d'accès après l'upload
     price: "2.5 ETH",
   },
   {
     id: 3,
     title: "Rolex",
     description: "Oyster Perpetual Datejust",
-    image: "img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img7.png", // Remplacez par le chemin d'accès après l'upload
     price: "12.0 ETH",
   },
   {
     id: 1,
     title: "Grand Seiko",
     description: "Spring Drive GMT",
-    image: "img4.png", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img4.png", // Remplacez par le chemin d'accès après l'upload
     price: "5.0 ETH",
   },
   {
     id: 2,
     title: "Mido",
     description: "Baroncelli Heritage Automatic",
-    image: "img5.png", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img5.png", // Remplacez par le chemin d'accès après l'upload
     price: "2.5 ETH",
   },
   {
     id: 3,
     title: "Rolex",
     description: "Oyster Perpetual Datejust",
-    image: "img6.jpg", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img6.png", // Remplacez par le chemin d'accès après l'upload
     price: "12.0 ETH",
   },
   {
     id: 1,
     title: "Grand Seiko",
     description: "Spring Drive GMT",
-    image: "img7.png", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img3.png", // Remplacez par le chemin d'accès après l'upload
     price: "5.0 ETH",
   },
   {
     id: 2,
     title: "Mido",
     description: "Baroncelli Heritage Automatic",
-    image: "img8.png", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img8.png", // Remplacez par le chemin d'accès après l'upload
     price: "2.5 ETH",
   },
   {
     id: 3,
     title: "Rolex",
     description: "Oyster Perpetual Datejust",
-    image: "img9.jpg", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img9.png", // Remplacez par le chemin d'accès après l'upload
     price: "12.0 ETH",
   },
   {
     id: 3,
     title: "Rolex",
     description: "Oyster Perpetual Datejust",
-    image: "img10.jpg", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img10.png", // Remplacez par le chemin d'accès après l'upload
     price: "12.0 ETH",
   },
   {
     id: 3,
     title: "Rolex",
     description: "Oyster Perpetual Datejust",
-    image: "img3.jpg", // Remplacez par le chemin d'accès après l'upload
+    image: "/marketplace_pictures/img11.png", // Remplacez par le chemin d'accès après l'upload
     price: "12.0 ETH",
   },
 ];
 const NFTCard = ({ nft }) => (
   <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 bg-white dark:bg-gray-800">
-    <img src={nft.image} alt={`NFT ${nft.id}`} className="w-full h-60 object-cover" />
+    {/* Styles en ligne pour fixer la largeur à 250px et la hauteur à 300px */}
+    <img src={nft.image} alt={`NFT ${nft.id}`} style={{ width: "250px", height: "300px", objectFit: "cover" }} />
     <div className="p-4">
       <h2 className="font-semibold text-xl text-gray-900 dark:text-gray-100">{nft.title}</h2>
       <p className="text-gray-700 dark:text-gray-300">{nft.description}</p>
