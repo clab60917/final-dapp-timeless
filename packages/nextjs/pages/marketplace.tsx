@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "tailwindcss/tailwind.css";
 import { MetaHeader } from "~~/components/MetaHeader";
 
@@ -82,14 +82,14 @@ const nfts = [
   },
 ];
 const NFTCard = ({ nft }) => (
-  <div className="border border-gray-700 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 bg-transparent">
-    <img src={nft.image} alt={`NFT ${nft.id}`} className="w-full h-360 object-cover" />
-    <div className="p-2">
-      <h2 className="font-bold text-xl text-gray-900 dark:text-gray-100">{nft.title}</h2>
-      <p className="text-gray-800 dark:text-gray-200">{nft.description}</p>
-      <div className="flex justify-between items-center mt-3">
+  <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 bg-white dark:bg-gray-800">
+    <img src={nft.image} alt={`NFT ${nft.id}`} className="w-full h-60 object-cover" />
+    <div className="p-4">
+      <h2 className="font-semibold text-xl text-gray-900 dark:text-gray-100">{nft.title}</h2>
+      <p className="text-gray-700 dark:text-gray-300">{nft.description}</p>
+      <div className="flex justify-between items-center mt-4">
         <span className="font-semibold text-gray-900 dark:text-gray-100">{nft.price}</span>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
           Buy
         </button>
       </div>
@@ -100,20 +100,23 @@ const NFTCard = ({ nft }) => (
 const Marketplace = () => {
   const [darkMode, setDarkMode] = useState(false);
 
+  useEffect(() => {
+    // Mettre à jour la classe de la balise HTML en fonction du thème
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
   return (
-    <div className={darkMode ? "dark" : ""}>
+    <div className="min-h-screen transition-colors duration-300">
       <MetaHeader />
-      <div className="bg-gray-800 dark:bg-gray-200 min-h-screen">
-        <div className="container mx-auto py-8 px-4">
-          <button onClick={() => setDarkMode(!darkMode)} className="text-white dark:text-gray-800">
-            Buy the lastest Drops
-          </button>
-          <h1 className="text-4xl font-bold text-white dark:text-gray-900 mb-8">NFT Marketplace</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {nfts.map(nft => (
-              <NFTCard key={nft.id} nft={nft} />
-            ))}
-          </div>
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-4xl font-bold" style={{ color: darkMode ? "white" : "gray-900" }}>
+          NFT Marketplace
+        </h1>
+        <br />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {nfts.map(nft => (
+            <NFTCard key={nft.id} nft={nft} />
+          ))}
         </div>
       </div>
     </div>

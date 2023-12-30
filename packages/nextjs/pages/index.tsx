@@ -61,7 +61,7 @@ const Home: NextPage = () => {
         </a>
 
         {/* Testimonials Section */}
-        <div className="bg-base-200 py-12">
+        <div className="py-12">
           <h2 className="text-center text-3xl font-bold mb-6">What Our Customers Say</h2>
           <div className="flex gap-4 justify-center">
             <Testimonial text="I love my new NFT watch! The quality is unmatched." author="Alex" />
