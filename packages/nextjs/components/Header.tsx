@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,7 +12,6 @@ type HeaderMenuLink = {
   href: string;
   icon?: React.ReactNode;
 };
-//Debut du header
 
 export const menuLinks: HeaderMenuLink[] = [
   {
@@ -67,11 +66,18 @@ export const HeaderMenuLinks = () => {
  */
 export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(false);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
+
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+
+  useEffect(() => {
+    const isDarkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDarkTheme(isDarkTheme);
+  }, []);
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -100,11 +106,15 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/DALLE1.png" />
+            <Image
+              alt="Logo"
+              className="cursor-pointer"
+              fill
+              src={darkTheme ? "/logos/logo_blanc.png" : "/logos/logo_noir.png"}
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">TimeLess</span>
-            <span className="text-xs">Based on luxury watches.</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
