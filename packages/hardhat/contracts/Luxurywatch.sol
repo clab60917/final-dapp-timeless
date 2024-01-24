@@ -7,91 +7,196 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract LuxuryWatch is ERC721, Ownable {
-    uint256 private _tokenIds;
+	uint256 private _tokenIds;
+	// Watch structure for NFT
+	struct Watch {
+		string brand;
+		string model;
+		string serialNumber;
+		uint256 price;
+		string uriMetadata;
+	}
 
-    struct Watch {
-        string brand;
-        string model;
-        string serialNumber;
-        uint256 price;
+    // Arrays containing the watch nft
+	mapping(uint256 => Watch) private watchInfo;
+    // Array containing the exchanges propositions
+	mapping(uint256 => uint256) private exchanges;
+    // Arry containing the number of owner for each nft
+    mapping(uint256 => uint256) private nbOwners;
+
+
+	// Custom error
+	error Unauthorized(address caller);
+	error PriceTooLow(uint256 requestedPrice, uint256 currentPrice);
+	error TokenNotExist(uint256 tokenId);
+	error NotOwner(address owner, address caller);
+	error InsufficientFunds(uint256 available, uint256 required);
+	error NotTokenOwner(address caller, uint256 tokenId);
+
+	// Custom event
+	event WatchNFTCreated(
+		address sender,
+		uint256 indexed tokenId,
+		string brand,
+		string model,
+		string serialNumber
+	);
+    event ExchangeProposed(uint256 mineNFT, uint256 otherNFT);
+    event ExchangeAccepted(uint256 mineNFT, uint256 otherNFT);
+    event ExchangeRefused(uint256 mineNFT, uint256 otherNFT);
+    event ownerChanged(address indexed newOwner);
+
+	constructor() ERC721("LuxuryWatch", "GEAR") {}
+
+	/**
+	 *  Function to create a nft
+	 * @param _brand Name of the nft
+	 * @param _model Model of the wwatch
+	 * @param _serialNumber serial nulber of the watch
+	 * @param _price price of the watch
+	 * @param _metadataURI image of the watch
+	 */
+	function createWatchNFT(
+		string memory _brand,
+		string memory _model,
+		string memory _serialNumber,
+		uint256 _price,
+		string memory _metadataURI
+	) public {
+        // Incrementation of the id token
+		_tokenIds++;
+        // Minting of our new nft
+		_mint(msg.sender, _tokenIds);
+
+        // Creation of the content of the NFT
+		Watch memory newWatch = Watch({
+			brand: _brand,
+			model: _model,
+			serialNumber: _serialNumber,
+			price: _price,
+            uriMetadata: _metadataURI
+
+		});
+        
+        // Save content of the NFT in the contract memory
+		watchInfo[_tokenIds] = newWatch;
+        // Set exchange to current NFT to 0
+        exchanges[_tokenIds] = 0;
+        // Set number of owner for the nft to 1
+        nbOwners[_tokenIds] = 1;
+
+        // Emit 
+		emit WatchNFTCreated(
+			msg.sender,
+			_tokenIds,
+			_brand,
+			_model,
+			_serialNumber
+		);
+	}
+
+
+    /**
+     * Function to propose an exchange between two NFT
+     * @param mineNftId NFT I want to exchange
+     * @param otherNftId NFT I want
+     */
+    function proposeExchange(uint256 mineNftId, uint256 otherNftId) public{
+        require(ownerOf(mineNftId) == msg.sender, "You are not the owner of this NFT");
+        require(ownerOf(otherNftId) != msg.sender, "You are the owner of this NFT");
+        require(exchanges[mineNftId] == 0, "My NFT is already in an exchange");
+        require(exchanges[otherNftId] == 0, "The other NFT is already in an exchange");
+        exchanges[mineNftId] = otherNftId;
+        exchanges[otherNftId] = mineNftId;
+
+        approve(ownerOf(otherNftId), mineNftId);
+        emit ExchangeProposed(mineNftId, otherNftId);
+
     }
 
-    uint256 constant royaltyPercentage = 5;
-    mapping(uint256 => Watch) private watchInfo;
-    mapping(uint256 => address[]) private watchOwnershipHistory;
-    mapping(uint256 => string) private watchMetadataURI;
 
-    error Unauthorized(address caller);
-    error PriceTooLow(uint256 requestedPrice, uint256 currentPrice);
-    error TokenNotExist(uint256 tokenId);
-    error NotOwner(address owner, address caller);
-    error InsufficientFunds(uint256 available, uint256 required);
-    error NotTokenOwner(address caller, uint256 tokenId);
+    /**
+     * Function to accept an exchange
+     * @param mineNftId NFT the other want 
+     * @param otherNftId NFT the other proposed to me
+     */
+    function acceptExchange(uint256 mineNftId, uint256 otherNftId)public{
+        require(ownerOf(mineNftId) == msg.sender, "You are not the owner of this NFT");
+        require(ownerOf(otherNftId) != msg.sender, "You are the owner of this NFT");
+        require(exchanges[mineNftId] == otherNftId, "This NFT is not in this exchange");
+        require(exchanges[otherNftId] == mineNftId, "This NFT is not in this exchange");
 
-    event WatchNFTCreated(uint256 indexed tokenId, string brand, string model, string serialNumber);
-    event WatchNFTSold(uint256 indexed tokenId, address from, address to, uint256 price);
-    event ApprovalForSale(uint256 indexed tokenId, address indexed approved, uint256 price);
+        address me = ownerOf(mineNftId);
+        address other = ownerOf(otherNftId);
 
-    constructor() ERC721("LuxuryWatch", "MTK") {}
+        approve(ownerOf(otherNftId), mineNftId);
 
-    function createWatchNFT(string memory _brand, string memory _model, string memory _serialNumber, uint256 _price, string memory _metadataURI) public {
-        _tokenIds++;
-        uint256 newItemId = _tokenIds;
-        _mint(msg.sender, newItemId);
+        safeTransferFrom(me, other, mineNftId);
+        safeTransferFrom(other, me, otherNftId);
 
-        Watch memory newWatch = Watch({
-            brand: _brand,
-            model: _model,
-            serialNumber: _serialNumber,
-            price: _price
-        });
+        exchanges[mineNftId] = 0;
+        exchanges[otherNftId] = 0;
+        nbOwners[mineNftId] += 1;
+        nbOwners[otherNftId] += 1;
 
-        watchInfo[newItemId] = newWatch;
-        watchOwnershipHistory[newItemId].push(msg.sender);
-        watchMetadataURI[newItemId] = _metadataURI;
+        emit ExchangeAccepted(mineNftId, otherNftId);
+    }
+    /**
+     * Remove proposition
+     * @param mineNftId mine nft id
+     * @param otherNftId the other nft id
+     */
+    function removeExchange(uint256 mineNftId, uint256 otherNftId) public {
+        require(ownerOf(mineNftId) == msg.sender, "You are not the owner of this NFT");
+        require(ownerOf(otherNftId) != msg.sender, "You are the owner of this NFT");
+        require(exchanges[mineNftId] == 0, "My NFT is already in an exchange");
+        require(exchanges[otherNftId] == 0, "The other NFT is already in an exchange");
+        exchanges[mineNftId] = 0;
+        exchanges[otherNftId] = 0;
 
-        emit WatchNFTCreated(newItemId, _brand, _model, _serialNumber);
+        approve(address(0), mineNftId);
+
     }
 
-    function approveForSale(uint256 _tokenId, address _approved, uint256 _price) public {
-        if (ownerOf(_tokenId) != msg.sender) revert NotOwner(ownerOf(_tokenId), msg.sender);
-        approve(_approved, _tokenId);
-        watchInfo[_tokenId].price = _price;
-        emit ApprovalForSale(_tokenId, _approved, _price);
+    /**
+     * Function call to refuse Exchange 
+     * @param mineNftId mine nft id
+     * @param otherNftId the other nft id
+     */
+    function refuseExchange(uint256 mineNftId, uint256 otherNftId) public{
+        require(ownerOf(mineNftId) == msg.sender, "You are not the owner of this NFT");
+        require(ownerOf(otherNftId) != msg.sender, "You are the owner of this NFT");
+        require(exchanges[mineNftId] == otherNftId, "This NFT is not in this exchange");
+        require(exchanges[otherNftId] == mineNftId, "This NFT is not in this exchange");
+
+        exchanges[mineNftId] = 0;
+        exchanges[otherNftId] = 0;
+
+        emit ExchangeRefused(mineNftId, otherNftId);
     }
 
-    function sellWatchNFT(uint256 _tokenId, address _buyer) public payable {
-        if (getApproved(_tokenId) != _buyer) revert Unauthorized(msg.sender);
-        if (msg.value < watchInfo[_tokenId].price) revert InsufficientFunds(msg.value, watchInfo[_tokenId].price);
 
-        uint256 salePrice = watchInfo[_tokenId].price;
-        uint256 royaltyFee = (salePrice * royaltyPercentage) / 100;
+    /**
+     * Function to update metadata
+     * @param _tokenId id of the NFT to update
+     * @param _newMetadataURI String containing the new metadatas
+     */
+	function updateMetadataURI(
+		uint256 _tokenId,
+		string memory _newMetadataURI
+	) public {
+		if (ownerOf(_tokenId) != msg.sender)
+			revert NotTokenOwner(msg.sender, _tokenId);
+		watchInfo[_tokenId].uriMetadata = _newMetadataURI;
+	}
 
-        address payable creator = payable(ownerOf(_tokenId));
-        address payable seller = payable(msg.sender);
-
-        // Transferring royalty to the creator
-        (bool sent, ) = creator.call{value: royaltyFee}("");
-        require(sent, "Failed to send Ether");
-
-        // Transferring remaining funds to the seller
-        (sent, ) = seller.call{value: salePrice - royaltyFee}("");
-        require(sent, "Failed to send Ether");
-
-        watchOwnershipHistory[_tokenId].push(_buyer);
-        _transfer(msg.sender, _buyer, _tokenId);
-
-        emit WatchNFTSold(_tokenId, msg.sender, _buyer, salePrice);
+    /**
+     * Function to get the number of owner a nft has had
+     * @param nft id of the nft
+     */
+    function getNbOwners(uint256 nft) public view returns(uint256){
+        return nbOwners[nft];
     }
 
-    function getWatchOwnershipHistory(uint256 _tokenId) public view returns (address[] memory) {
-        return watchOwnershipHistory[_tokenId];
-    }
-
-    function updateMetadataURI(uint256 _tokenId, string memory _newMetadataURI) public {
-        if (ownerOf(_tokenId) != msg.sender) revert NotTokenOwner(msg.sender, _tokenId);
-        watchMetadataURI[_tokenId] = _newMetadataURI;
-    }
-
-    // Vous pouvez ajouter plus de fonctions si nécessaire
+   
 }
