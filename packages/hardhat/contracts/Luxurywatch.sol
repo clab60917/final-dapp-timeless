@@ -17,6 +17,11 @@ contract LuxuryWatch is ERC721, Ownable {
 		string uriMetadata;
 	}
 
+    struct Exchange{
+        Watch first;
+        Watch second;
+    }
+
 	// Arrays containing the watch nft
 	mapping(uint256 => Watch) private watchInfo;
 	// Array containing the exchanges propositions
@@ -258,4 +263,43 @@ contract LuxuryWatch is ERC721, Ownable {
 		}
 		return tokensId;
 	}
+    /**
+	 * @dev Retourne tous les tokens possédés par une adresse donnée.
+	 * @param owner L'adresse du propriétaire des NFTs.
+	 * @return Une liste de tous les tokens possédés par l'adresse donnée.
+	 */
+	function getTokensInfosOfOwner(
+		address owner
+	) external view returns (Watch[] memory) {
+		uint256 totalTokens = _tokenIds;
+		uint256[] memory temp = new uint256[](totalTokens);
+		uint256 count = 0;
+		for (uint256 i = 1; i <= totalTokens; i++) {
+			if (ownerOf(i) == owner) {
+				temp[count] = i;
+				count++;
+			}
+		}
+
+		Watch[] memory tokensInfo = new Watch[](count);
+		for (uint256 i = 0; i < count; i++) {
+			tokensInfo[i] = watchInfo[temp[i]];
+		}
+		return tokensInfo;
+	}
+
+
+    /**
+     * Function that return an array with all watches created
+     */
+    function getAllWatches() public view returns(Watch[] memory){
+        Watch[] memory tokensInfo = new Watch[](_tokenIds);
+		for (uint256 i = 0; i < _tokenIds; i++) {
+			tokensInfo[i] = watchInfo[i];
+		}
+		return tokensInfo;
+    }
+
+
+
 }
