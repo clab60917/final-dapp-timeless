@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     LuxuryWatch: {
-      address: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [],
@@ -289,6 +289,19 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "ownerChanged",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -398,6 +411,44 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "uint256",
+              name: "nft",
+              type: "uint256",
+            },
+          ],
+          name: "getNbOwners",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "getTokensOfOwner",
+          outputs: [
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "address",
               name: "owner",
               type: "address",
@@ -496,6 +547,24 @@ const deployedContracts = {
             },
           ],
           name: "refuseExchange",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "mineNftId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "otherNftId",
+              type: "uint256",
+            },
+          ],
+          name: "removeExchange",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -683,287 +752,6 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-    },
-    NFTExchange: {
-      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "caller",
-              type: "address",
-            },
-          ],
-          name: "NotOwner",
-          type: "error",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "approved",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "price",
-              type: "uint256",
-            },
-          ],
-          name: "ApprovalForSale",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "id",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "nftContract",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "seller",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "price",
-              type: "uint256",
-            },
-          ],
-          name: "ListingCreated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "id",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "buyer",
-              type: "address",
-            },
-          ],
-          name: "ListingSold",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "previousOwner",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "OwnershipTransferred",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "callListing",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "nftContract",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "_price",
-              type: "uint256",
-            },
-          ],
-          name: "approveForSale",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "listingId",
-              type: "uint256",
-            },
-          ],
-          name: "buyNFT",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "nftContract",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "price",
-              type: "uint256",
-            },
-          ],
-          name: "createListing",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "listings",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "id",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "nftContract",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "address payable",
-              name: "seller",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "price",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "isSold",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "renounceOwnership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "transferOwnership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {
-        owner: "@openzeppelin/contracts/access/Ownable.sol",
-        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-      },
     },
   },
 } as const;
