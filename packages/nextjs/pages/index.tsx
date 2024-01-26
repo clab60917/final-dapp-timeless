@@ -51,8 +51,8 @@ const Home: NextPage = () => {
           </h1>
           <p className="mx-auto max-w-2xl sm:text-lg md:text-xl md:leading-8">
             Explore our exclusive marketplace for luxury watch NFTs, where each NFT is linked to an authentic physical
-            timepiece. Purchase an NFT and become the owner of a tangible luxury watch, blending digital innovation with
-            classic elegance.
+            timepiece. Create and exchange an NFT, and become the owner of a tangible luxury watch, blending digital
+            innovation with classic elegance.
           </p>
         </div>
 
@@ -64,9 +64,9 @@ const Home: NextPage = () => {
         <div className="py-12">
           <h2 className="text-center text-3xl font-bold mb-6">What Our Customers Say</h2>
           <div className="flex gap-4 justify-center">
-            <Testimonial text="I love my new NFT watch! The quality is unmatched." author="Alex" />
-            <Testimonial text="A unique blend of technology and style." author="Sam" />
-            <Testimonial text="A unique blend of technology and style." author="Sam" />
+            <Testimonial text="I love my new NFT watch! So cool to see my watch in the blockchain!" author="Alex" />
+            <Testimonial text="A unique blend of technology and style. Exchange with me !" author="Clement" />
+            <Testimonial text="The idea to trade physical items is really interesting." author="Claude" />
           </div>
         </div>
 
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50 z-50">
             <div className="bg-base-100 p-6 rounded-lg shadow-xl">
-              <p className="text-lg">New events are not available now, come back later !</p>
+              <p className="text-lg">There is no new events, come back later !</p>
               <button className="btn btn-primary mt-4" onClick={closePopup}>
                 Close
               </button>
@@ -103,24 +103,20 @@ const Home: NextPage = () => {
           <h2 className="text-center text-3xl font-bold mb-6">Frequently Asked Questions</h2>
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             <AccordionItem
-              question="How do I purchase a watch NFT?"
-              answer="Visit our marketplace and select the watch that resonates with you."
+              question="How do I create my own NFT ?"
+              answer="Just connect your wallet to our Dapp, and then fill the form in the 'createNFT' box."
             />
             <AccordionItem
-              question="Can I see the watch in person?"
-              answer="Yes, appointments can be made to view our collection physically."
+              question="What does 'physically-linked watches' mean ?"
+              answer="It means that every NFT on this platform is created by an owner of the actual physical watch."
             />
             <AccordionItem
-              question="What payment methods are accepted?"
-              answer="We accept various cryptocurrencies and traditional payment methods."
-            />
-            <AccordionItem
-              question="Is there a warranty on the watches?"
-              answer="Yes, each watch comes with a manufacturer's warranty."
+              question="So there is no payment ?"
+              answer="Our system is based on exchange-model for passionates about watches, so there is no cryptocurrencie payment method."
             />
             <AccordionItem
               question="How are the NFTs authenticated?"
-              answer="Each NFT is verified for authenticity and linked to its physical counterpart."
+              answer="Each NFT is not verified for authenticity, we count on users responsability."
             />
             {/* ...autres questions... */}
           </div>
