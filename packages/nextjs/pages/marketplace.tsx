@@ -21,17 +21,14 @@ const Marketplace = () => {
         {nfts.map((nft, index) => (
           <div
             key={index}
-            className="relative border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 bg-white dark:bg-gray-800"
+            className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out bg-white dark:bg-gray-800"
           >
-            <img
-              src={nft.uriMetadata}
-              alt={`NFT ${index}`}
-              style={{ width: "250px", height: "300px", objectFit: "cover" }}
-            />
+            <img src={nft.uriMetadata} alt={`NFT ${index}`} className="w-full h-64 object-cover" />
             <div className="p-4">
-              <h2 className="font-semibold text-xl text-gray-900 dark:text-gray-100">{nft.model}</h2>
-              <p className="text-gray-700 dark:text-gray-300">{nft.brand}</p>
-              <p className="text-gray-700 dark:text-gray-300">{nft.price.toString()}</p>
+              <h2 className="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-2">{nft.model}</h2>
+              <p className="text-gray-700 dark:text-gray-300">Brand: {nft.brand}</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">Price: {nft.price.toString()} ETH</p>
+              {/* Ajoutez ici d'autres détails ou actions pour chaque NFT */}
             </div>
           </div>
         ))}
