@@ -4,7 +4,6 @@ import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaf
 const Marketplace = () => {
   const [nftToPropose, setNftToPropose] = useState({ with: "", current: "" });
 
-  // Création d'un NFT
   const { write: proposeExchange } = useScaffoldContractWrite({
     contractName: "LuxuryWatch",
     functionName: "proposeExchange",

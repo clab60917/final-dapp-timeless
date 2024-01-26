@@ -7,35 +7,35 @@ const Trades = () => {
   const [nftData, setNftData] = useState({ brand: "", model: "", serialNumber: "", price: "", uriMetadata: "" });
   const [exchange, setExchange] = useState({with: "", current: ""});
 
-  // Création d'un NFT
+
   const { write: createWatchNFT } = useScaffoldContractWrite({
     contractName: "LuxuryWatch",
     functionName: "createWatchNFT",
     args: [nftData.brand, nftData.model, nftData.serialNumber, nftData.price, nftData.uriMetadata],
   });
 
-  // Accept Trade
+
   const { write: acceptTrade } = useScaffoldContractWrite({
     contractName: "LuxuryWatch",
     functionName: "acceptExchange",
     args: [exchange.with, exchange.current],
   });
 
-  // Refuse Trade
+
   const { write: refuseTrade } = useScaffoldContractWrite({
     contractName: "LuxuryWatch",
     functionName: "refuseExchange",
     args: [exchange.with, exchange.current],
   });
 
-  // Delete Trade
+
   const { write: deleteTrade } = useScaffoldContractWrite({
     contractName: "LuxuryWatch",
     functionName: "removeExchange",
     args: [exchange.current, exchange.with],
   });
 
-  // Récupérer les échanges proposés par et pour le wallet
+
   const { data: proposedByData } = useScaffoldContractRead({
     contractName: "LuxuryWatch",
     functionName: "getExchangesProposedBy",
@@ -73,12 +73,12 @@ const Trades = () => {
         <div key={index}>
           <p>Exchange with NFT ID: {exchange.exchangeWith.toString()}</p>
           <p>Proposed by: {exchange.proposedBy}</p>
-          {/* Boutons pour accepter ou refuser l'échange */}
+
         </div>
       ))
     );
   };
-  // Fonctions pour gérer les actions sur les échanges...
+
 
   return (
     <div className="container mx-auto p-4">

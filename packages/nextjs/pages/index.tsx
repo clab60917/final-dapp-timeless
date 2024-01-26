@@ -1,4 +1,3 @@
-//import Link from "next/link";
 import React, { useState } from "react";
 import type { NextPage } from "next";
 import { StarIcon } from "@heroicons/react/24/outline";
@@ -60,7 +59,6 @@ const Home: NextPage = () => {
           <button className="btn btn-outline btn-info">Visit the Marketplace</button>
         </a>
 
-        {/* Testimonials Section */}
         <div className="py-12">
           <h2 className="text-center text-3xl font-bold mb-6">What Our Customers Say</h2>
           <div className="flex gap-4 justify-center">
@@ -70,7 +68,6 @@ const Home: NextPage = () => {
           </div>
         </div>
 
-        {/* Upcoming Events Section */}
         <div
           className="upcoming-events-section bg-cover bg-center py-12"
           style={{ backgroundImage: "url(/event-img.png)" }}
@@ -86,7 +83,6 @@ const Home: NextPage = () => {
           </div>
         </div>
 
-        {/* Popup */}
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50 z-50">
             <div className="bg-base-100 p-6 rounded-lg shadow-xl">
@@ -98,7 +94,6 @@ const Home: NextPage = () => {
           </div>
         )}
 
-        {/* FAQ Section */}
         <div className="py-12">
           <h2 className="text-center text-3xl font-bold mb-6">Frequently Asked Questions</h2>
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,7 +113,6 @@ const Home: NextPage = () => {
               question="How are the NFTs authenticated?"
               answer="Each NFT is not verified for authenticity, we count on users responsability."
             />
-            {/* ...autres questions... */}
           </div>
         </div>
       </div>
