@@ -18,7 +18,8 @@ contract LuxuryWatch is ERC721 {
 		uint256 id;
 	}
 	struct Exchange{
-		uint256 exchangeWith;
+		Watch exchangeWith;
+		Watch currentWatch;
 		address proposedBy;
 		bool progress;
 	}
@@ -127,12 +128,14 @@ contract LuxuryWatch is ERC721 {
 
 	function proposeExchange(uint256 proposed, uint256 wanted) public {
 		exchanges[wanted].progress = true;
-		exchanges[wanted].exchangeWith = proposed;
+		exchanges[wanted].exchangeWith = watchInfo[proposed];
+		exchanges[wanted].currentWatch = watchInfo[wanted];
 		exchanges[wanted].proposedBy = msg.sender;
 
-		exchanges[wanted].progress = true;
-		exchanges[wanted].exchangeWith = wanted;
-		exchanges[wanted].proposedBy = msg.sender;
+		exchanges[proposed].progress = true;
+		exchanges[proposed].exchangeWith = watchInfo[wanted];
+		exchanges[proposed].currentWatch = watchInfo[proposed];
+		exchanges[proposed].proposedBy = msg.sender;
 
 		approve(ownerOf(wanted), proposed);
 
@@ -168,30 +171,37 @@ contract LuxuryWatch is ERC721 {
 		exchanges[proposed].progress = false;
 	}
 
-	function getExchangesProposedBy(address owner) public view returns(Exchange[] memory){
+	function getExchanges(address owner, bool by ) public view returns(Exchange[] memory){
 		uint256 nbNFT = nftOwnedBy[owner].length;
 		uint256 count = 0;
-		Exchange[] memory exchangesProposedBy = new Exchange[](nbNFT);
+		Exchange[] memory tmp = new Exchange[](nbNFT);
 		for(uint256 i = 0; i < nbNFT; i++){
 			uint256 currentNft = nftOwnedBy[owner][i]; 
-			if(exchanges[currentNft].proposedBy == msg.sender && exchanges[currentNft].progress){
-				exchangesProposedBy[count++] = exchanges[currentNft];
+			if(by){
+				if(exchanges[currentNft].proposedBy == owner && exchanges[currentNft].progress){
+					tmp[count++] = exchanges[currentNft];
+				}
+			}else{
+				if(exchanges[currentNft].proposedBy != owner && exchanges[currentNft].progress){
+					tmp[count++] = exchanges[currentNft];
+				}
 			}
+			
 		}
+		Exchange[] memory exchangesProposedBy = new Exchange[](count);
+		for(uint256 i = 0; i < count; i++){
+			exchangesProposedBy[i] = tmp[i];
+		}
+
 		return exchangesProposedBy;
 	}
 
+	function getExchangesProposedBy(address owner) public view returns(Exchange[] memory){
+		return getExchanges(owner, true);
+	}
+
 	function getExchangesFor(address owner) public view returns(Exchange[] memory){
-		uint256 nbNFT = nftOwnedBy[owner].length;
-		uint256 count = 0;
-		Exchange[] memory exchangesProposedBy = new Exchange[](nbNFT);
-		for(uint256 i = 0; i < nbNFT; i++){
-			uint256 currentNft = nftOwnedBy[owner][i]; 
-			if(exchanges[currentNft].proposedBy != msg.sender && exchanges[currentNft].progress){
-				exchangesProposedBy[count++] = exchanges[currentNft];
-			}
-		}
-		return exchangesProposedBy;
+		return getExchanges(owner, false);
 	}
 
 	/*____________Functions utils_________________*/
@@ -254,33 +264,6 @@ contract LuxuryWatch is ERC721 {
 		}
 		return tokensInfo;
     }
-
-	/*function getExchangesOfOwner(address owner) public view returns(Exchange[] memory){
-		uint256[] memory nfts = getTokensOfOwner(owner);
-		uint count = nfts.length;
-		// Count how many nfts are in exchange
-		for(uint i = 0; i < nfts.length; i++){
-			if(exchanges[nfts[i]]==0){
-				nfts[i] = 0;
-				count --;
-			}
-		}
-		// Create array with the right size
-		Exchange[] memory temp_exchanges = new Exchange[](count);
-		uint j = 0;
-		for(uint i = 0; i < nfts.length; i++){
-
-			// If nft is in exchange modify exchange array for return 
-			if(nfts[i] != 0){
-				// first will be the watch of the owner (wanted)
-				temp_exchanges[j].first = watchInfo[nfts[i]];
-				// second will be the watch of the other (proposed)
-				temp_exchanges[j].second = watchInfo[exchanges[nfts[i]]];
-				j++;
-			}
-		}
-		return temp_exchanges;
-	}*/
 
 	function getNumberNftOwnedBy(address owner) public view returns(uint256){
 		return nftOwnedBy[owner].length;

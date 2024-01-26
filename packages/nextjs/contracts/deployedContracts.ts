@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     LuxuryWatch: {
-      address: "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
+      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
       abi: [
         {
           inputs: [],
@@ -429,15 +429,194 @@ const deployedContracts = {
               name: "owner",
               type: "address",
             },
+            {
+              internalType: "bool",
+              name: "by",
+              type: "bool",
+            },
+          ],
+          name: "getExchanges",
+          outputs: [
+            {
+              components: [
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "exchangeWith",
+                  type: "tuple",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "currentWatch",
+                  type: "tuple",
+                },
+                {
+                  internalType: "address",
+                  name: "proposedBy",
+                  type: "address",
+                },
+                {
+                  internalType: "bool",
+                  name: "progress",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct LuxuryWatch.Exchange[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
           ],
           name: "getExchangesFor",
           outputs: [
             {
               components: [
                 {
-                  internalType: "uint256",
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
                   name: "exchangeWith",
-                  type: "uint256",
+                  type: "tuple",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "currentWatch",
+                  type: "tuple",
                 },
                 {
                   internalType: "address",
@@ -471,9 +650,78 @@ const deployedContracts = {
             {
               components: [
                 {
-                  internalType: "uint256",
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
                   name: "exchangeWith",
-                  type: "uint256",
+                  type: "tuple",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "currentWatch",
+                  type: "tuple",
                 },
                 {
                   internalType: "address",

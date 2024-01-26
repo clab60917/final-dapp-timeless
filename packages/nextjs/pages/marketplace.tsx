@@ -1,7 +1,16 @@
-import React from "react";
-import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import React, { useState } from "react";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const Marketplace = () => {
+  const [nftToPropose, setNftToPropose] = useState({ with: "", current: "" });
+
+  // Création d'un NFT
+  const { write: proposeExchange } = useScaffoldContractWrite({
+    contractName: "LuxuryWatch",
+    functionName: "proposeExchange",
+    args: [BigInt(nftToPropose.with), BigInt(nftToPropose.current)],
+  });
+
   const {
     data: nfts,
     isError,
@@ -10,6 +19,12 @@ const Marketplace = () => {
     contractName: "LuxuryWatch",
     functionName: "getAllWatches",
   });
+  const handleInputChange = e => {
+    setNftToPropose({ with: e.target.value, current: nftToPropose.current });
+  };
+  const handleProposeExchange = () => {
+    proposeExchange();
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !nfts) return <div>Error loading NFTs.</div>;
@@ -24,11 +39,34 @@ const Marketplace = () => {
             className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out bg-white dark:bg-gray-800"
           >
             <img src={nft.uriMetadata} alt={`NFT ${index}`} className="w-full h-64 object-cover" />
-            <div className="p-4">
-              <h2 className="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-2">{nft.model}</h2>
-              <p className="text-gray-700 dark:text-gray-300">Brand: {nft.brand}</p>
-              <p className="text-gray-700 dark:text-gray-300 mb-4">Price: {nft.price.toString()} ETH</p>
-              {/* Ajoutez ici d'autres détails ou actions pour chaque NFT */}
+            <div className="p-4 flex flex-col justify-between md:grid-cols-2">
+              <div>
+                <div>
+                  <h2 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{nft.model}</h2>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Brand: {nft.brand}</p>
+                </div>
+                <div className="mt-2">
+                  <p className="text-gray-700 dark:text-gray-300 font-bold">Price: {nft.price.toString()} ETH</p>
+                  <p className="text-gray-700 dark:text-gray-300 font-bold">Id: {nft.id.toString()}</p>
+                </div>
+              </div>
+              <div>
+                <input
+                  className="p-2 m-2 border rounded"
+                  type="text"
+                  name="nftToPropose"
+                  placeholder="nftToPropose"
+                  onChange={handleInputChange}
+                />
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+                  onClick={() => {
+                    setNftToPropose({ current: nft.id.toString(), with: nftToPropose.with }), handleProposeExchange();
+                  }}
+                >
+                  Send Exchange
+                </button>
+              </div>
             </div>
           </div>
         ))}
