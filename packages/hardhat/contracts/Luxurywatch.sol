@@ -6,9 +6,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract LuxuryWatch is ERC721, Ownable {
+contract LuxuryWatch is ERC721 {
 	uint256 private _tokenIds;
-	// Watch structure for NFT
+	/*____________Structure definitions_________________*/
 	struct Watch {
 		string brand;
 		string model;
@@ -21,15 +21,17 @@ contract LuxuryWatch is ERC721, Ownable {
         Watch first;
         Watch second;
     }
-
+	/*____________Mapping definitions_________________*/	
 	// Arrays containing the watch nft
 	mapping(uint256 => Watch) private watchInfo;
 	// Array containing the exchanges propositions
 	mapping(uint256 => uint256) private exchanges;
 	// Arry containing the number of owner for each nft
 	mapping(uint256 => uint256) private nbOwners;
+	// Arry containing all nftID owned by an address
+	mapping(address => uint256[]) private nftOwnedBy;
 
-	// Custom error
+	/*____________Error definitions_________________*/	
 	error Unauthorized(address caller);
 	error PriceTooLow(uint256 requestedPrice, uint256 currentPrice);
 	error TokenNotExist(uint256 tokenId);
@@ -37,7 +39,7 @@ contract LuxuryWatch is ERC721, Ownable {
 	error InsufficientFunds(uint256 available, uint256 required);
 	error NotTokenOwner(address caller, uint256 tokenId);
 
-	// Custom event
+	/*____________Event definitions_________________*/	
 	event WatchNFTCreated(
 		address sender,
 		uint256 indexed tokenId,
@@ -50,7 +52,31 @@ contract LuxuryWatch is ERC721, Ownable {
 	event ExchangeRefused(uint256 mineNFT, uint256 otherNFT);
 	event ownerChanged(address indexed newOwner);
 
+	// Constructor
 	constructor() ERC721("LuxuryWatch", "GEAR") {}
+
+	/*____________Modifier definitions_________________*/
+
+	modifier notMyNFT(uint256 nft){
+		require(ownerOf(nft) != msg.sender,"You are the owner of this NFT");
+		_;
+	}
+	modifier myNFT(uint256 nft){
+		require(ownerOf(nft) == msg.sender,"You are not the owner of this NFT");
+		_;
+	}
+	modifier NFTavailable(uint256 nft){
+		require(exchanges[nft] == 0, "NFT is already in an exchange");
+		_;
+	}
+	modifier NFTbusy(uint256 nft){
+		require(exchanges[nft] != 0, "NFT is not in an exchange");
+		_;
+	}
+	
+	/*____________Functions definitions_________________*/
+
+	/*____________Functions for the exchange_________________*/
 
 	/**
 	 *  Function to create a nft
@@ -87,7 +113,7 @@ contract LuxuryWatch is ERC721, Ownable {
 		exchanges[_tokenIds] = 0;
 		// Set number of owner for the nft to 1
 		nbOwners[_tokenIds] = 1;
-
+		nftOwnedBy[msg.sender].push(_tokenIds);
 		// Emit
 		emit WatchNFTCreated(
 			msg.sender,
@@ -100,121 +126,87 @@ contract LuxuryWatch is ERC721, Ownable {
 
 	/**
 	 * Function to propose an exchange between two NFT
-	 * @param mineNftId NFT I want to exchange
-	 * @param otherNftId NFT I want
+	 * @param proposed NFT I want to exchange
+	 * @param wanted NFT I want
 	 */
-	function proposeExchange(uint256 mineNftId, uint256 otherNftId) public {
-		require(
-			ownerOf(mineNftId) == msg.sender,
-			"You are not the owner of this NFT"
-		);
-		require(
-			ownerOf(otherNftId) != msg.sender,
-			"You are the owner of this NFT"
-		);
-		require(exchanges[mineNftId] == 0, "My NFT is already in an exchange");
-		require(
-			exchanges[otherNftId] == 0,
-			"The other NFT is already in an exchange"
-		);
-		exchanges[mineNftId] = otherNftId;
-		exchanges[otherNftId] = mineNftId;
+	function proposeExchange(uint256 proposed, uint256 wanted) 
+	myNFT(proposed) 
+	notMyNFT(wanted) 
+	NFTavailable(proposed)  
+	NFTavailable(wanted) 
+	public {
+		exchanges[wanted] = proposed;
 
-		approve(ownerOf(otherNftId), mineNftId);
-		emit ExchangeProposed(mineNftId, otherNftId);
+		approve(ownerOf(wanted), proposed);
+		emit ExchangeProposed(proposed, wanted);
 	}
 
 	/**
 	 * Function to accept an exchange
-	 * @param mineNftId NFT the other want
-	 * @param otherNftId NFT the other proposed to me
+	 * @param wanted NFT the other want
+	 * @param proposed NFT the other proposed to me
 	 */
-	function acceptExchange(uint256 mineNftId, uint256 otherNftId) public {
-		require(
-			ownerOf(mineNftId) == msg.sender,
-			"You are not the owner of this NFT"
-		);
-		require(
-			ownerOf(otherNftId) != msg.sender,
-			"You are the owner of this NFT"
-		);
-		require(
-			exchanges[mineNftId] == otherNftId,
-			"This NFT is not in this exchange"
-		);
-		require(
-			exchanges[otherNftId] == mineNftId,
-			"This NFT is not in this exchange"
-		);
+	function acceptExchange(uint256 wanted, uint256 proposed)
+	myNFT(proposed) 
+	notMyNFT(wanted) 
+	NFTbusy(proposed)  
+	NFTbusy(wanted) 
+	public {
 
-		address me = ownerOf(mineNftId);
-		address other = ownerOf(otherNftId);
+		address me = ownerOf(wanted);
+		address other = ownerOf(proposed);
 
-		approve(ownerOf(otherNftId), mineNftId);
+		approve(ownerOf(proposed), wanted);
 
-		safeTransferFrom(me, other, mineNftId);
-		safeTransferFrom(other, me, otherNftId);
+		safeTransferFrom(me, other, wanted);
+		safeTransferFrom(other, me, proposed);
 
-		exchanges[mineNftId] = 0;
-		exchanges[otherNftId] = 0;
-		nbOwners[mineNftId] += 1;
-		nbOwners[otherNftId] += 1;
+		exchanges[wanted] = 0;
+		exchanges[proposed] = 0;
+		nbOwners[wanted] += 1;
+		nbOwners[proposed] += 1;
 
-		emit ExchangeAccepted(mineNftId, otherNftId);
+		removeNFTFromCollection(proposed, other);
+		removeNFTFromCollection(wanted, me);
+
+		nftOwnedBy[me].push(proposed);
+		nftOwnedBy[other].push(wanted);
+
+		emit ExchangeAccepted(wanted, proposed);
 	}
 
 	/**
 	 * Remove proposition
-	 * @param mineNftId mine nft id
-	 * @param otherNftId the other nft id
+	 * @param proposed mine nft id
+	 * @param wanted the other nft id
 	 */
-	function removeExchange(uint256 mineNftId, uint256 otherNftId) public {
-		require(
-			ownerOf(mineNftId) == msg.sender,
-			"You are not the owner of this NFT"
-		);
-		require(
-			ownerOf(otherNftId) != msg.sender,
-			"You are the owner of this NFT"
-		);
-		require(exchanges[mineNftId] == 0, "My NFT is already in an exchange");
-		require(
-			exchanges[otherNftId] == 0,
-			"The other NFT is already in an exchange"
-		);
-		exchanges[mineNftId] = 0;
-		exchanges[otherNftId] = 0;
+	function removeExchange(uint256 proposed, uint256 wanted) 
+	myNFT(proposed) 
+	notMyNFT(wanted) 
+	NFTbusy(proposed)  
+	NFTbusy(wanted)
+	public {
+	
+		exchanges[wanted] = 0;
 
-		approve(address(0), mineNftId);
+		approve(address(0), proposed);
 	}
 
 	/**
 	 * Function call to refuse Exchange
-	 * @param mineNftId mine nft id
-	 * @param otherNftId the other nft id
+	 * @param wanted mine nft id
+	 * @param proposed the other nft id
 	 */
-	function refuseExchange(uint256 mineNftId, uint256 otherNftId) public {
-		require(
-			ownerOf(mineNftId) == msg.sender,
-			"You are not the owner of this NFT"
-		);
-		require(
-			ownerOf(otherNftId) != msg.sender,
-			"You are the owner of this NFT"
-		);
-		require(
-			exchanges[mineNftId] == otherNftId,
-			"This NFT is not in this exchange"
-		);
-		require(
-			exchanges[otherNftId] == mineNftId,
-			"This NFT is not in this exchange"
-		);
+	function refuseExchange(uint256 wanted, uint256 proposed) 
+	myNFT(proposed) 
+	notMyNFT(wanted) 
+	NFTbusy(proposed)  
+	NFTbusy(wanted)
+	public {
 
-		exchanges[mineNftId] = 0;
-		exchanges[otherNftId] = 0;
+		exchanges[wanted] = 0;
 
-		emit ExchangeRefused(mineNftId, otherNftId);
+		emit ExchangeRefused(wanted, proposed);
 	}
 
 	/**
@@ -231,6 +223,8 @@ contract LuxuryWatch is ERC721, Ownable {
 		watchInfo[_tokenId].uriMetadata = _newMetadataURI;
 	}
 
+
+	/*____________Functions utils_________________*/
 	/**
 	 * Function to get the number of owner a nft has had
 	 * @param nft id of the nft
@@ -238,6 +232,23 @@ contract LuxuryWatch is ERC721, Ownable {
 	function getNbOwners(uint256 nft) public view returns (uint256) {
 		return nbOwners[nft];
 	}
+	function removeNFTFromCollection(uint256 nft, address owner) private{
+		bool found = false;
+		uint numberOfNFT = nftOwnedBy[owner].length;
+		for (uint i = 0; i<numberOfNFT-1; i++){
+            if(nftOwnedBy[owner][i] == nft){
+				delete nftOwnedBy[owner][i];
+				found = true;
+			}
+			if(found){
+				nftOwnedBy[owner][i] = nftOwnedBy[owner][i+1];
+			}
+        }
+		if(found || nftOwnedBy[owner][numberOfNFT] == nft){
+			nftOwnedBy[owner].pop();
+		}
+	}
+
 
 	/**
 	 * @dev Retourne tous les tokenIds possédés par une adresse donnée.
@@ -246,22 +257,8 @@ contract LuxuryWatch is ERC721, Ownable {
 	 */
 	function getTokensOfOwner(
 		address owner
-	) external view returns (uint256[] memory) {
-		uint256 totalTokens = _tokenIds;
-		uint256[] memory temp = new uint256[](totalTokens);
-		uint256 count = 0;
-		for (uint256 i = 1; i <= totalTokens; i++) {
-			if (ownerOf(i) == owner) {
-				temp[count] = i;
-				count++;
-			}
-		}
-
-		uint256[] memory tokensId = new uint256[](count);
-		for (uint256 i = 0; i < count; i++) {
-			tokensId[i] = temp[i];
-		}
-		return tokensId;
+	) public view returns (uint256[] memory) {
+		return nftOwnedBy[owner];
 	}
     /**
 	 * @dev Retourne tous les tokens possédés par une adresse donnée.
@@ -271,19 +268,9 @@ contract LuxuryWatch is ERC721, Ownable {
 	function getTokensInfosOfOwner(
 		address owner
 	) external view returns (Watch[] memory) {
-		uint256 totalTokens = _tokenIds;
-		uint256[] memory temp = new uint256[](totalTokens);
-		uint256 count = 0;
-		for (uint256 i = 1; i <= totalTokens; i++) {
-			if (ownerOf(i) == owner) {
-				temp[count] = i;
-				count++;
-			}
-		}
-
-		Watch[] memory tokensInfo = new Watch[](count);
-		for (uint256 i = 0; i < count; i++) {
-			tokensInfo[i] = watchInfo[temp[i]];
+		Watch[] memory tokensInfo = new Watch[](nftOwnedBy[owner].length);
+		for (uint256 i = 0; i < nftOwnedBy[owner].length; i++) {
+			tokensInfo[i] = watchInfo[nftOwnedBy[owner][i]];
 		}
 		return tokensInfo;
 	}
@@ -300,6 +287,32 @@ contract LuxuryWatch is ERC721, Ownable {
 		return tokensInfo;
     }
 
+	function getExchangeOfOwner(address owner) public view returns(Exchange[] memory){
+		uint256[] memory nfts = getTokensOfOwner(owner);
+		uint count = nfts.length;
+		// Count how many nfts are in exchange
+		for(uint i = 0; i < nfts.length; i++){
+			if(exchanges[nfts[i]]==0){
+				nfts[i] = 0;
+				count --;
+			}
+		}
+		// Create array with the right size
+		Exchange[] memory temp_exchanges = new Exchange[](count);
+		uint j = 0;
+		for(uint i = 0; i < nfts.length; i++){
+
+			// If nft is in exchange modify exchange array for return 
+			if(nfts[i] != 0){
+				// first will be the watch of the owner (wanted)
+				temp_exchanges[j].first = watchInfo[nfts[i]];
+				// second will be the watch of the other (proposed)
+				temp_exchanges[j].second = watchInfo[exchanges[nfts[i]]];
+				j++;
+			}
+		}
+		return temp_exchanges;
+	}
 
 
 }

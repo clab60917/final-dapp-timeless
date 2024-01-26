@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     LuxuryWatch: {
-      address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
         {
           inputs: [],
@@ -213,25 +213,6 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
-              name: "previousOwner",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "OwnershipTransferred",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
               name: "from",
               type: "address",
             },
@@ -305,12 +286,12 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "mineNftId",
+              name: "wanted",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "otherNftId",
+              name: "proposed",
               type: "uint256",
             },
           ],
@@ -390,6 +371,46 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "getAllWatches",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "string",
+                  name: "brand",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "model",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "serialNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "price",
+                  type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "uriMetadata",
+                  type: "string",
+                },
+              ],
+              internalType: "struct LuxuryWatch.Watch[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -411,37 +432,83 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "_tokenId",
-              type: "uint256",
+              internalType: "address",
+              name: "owner",
+              type: "address",
             },
           ],
-          name: "getNFTinfo",
+          name: "getExchangeOfOwner",
           outputs: [
             {
-              internalType: "string",
+              components: [
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "first",
+                  type: "tuple",
+                },
+                {
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "brand",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "model",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "serialNumber",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "uriMetadata",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct LuxuryWatch.Watch",
+                  name: "second",
+                  type: "tuple",
+                },
+              ],
+              internalType: "struct LuxuryWatch.Exchange[]",
               name: "",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
+              type: "tuple[]",
             },
           ],
           stateMutability: "view",
@@ -569,19 +636,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "uint256",
@@ -604,12 +658,12 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "mineNftId",
+              name: "proposed",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "otherNftId",
+              name: "wanted",
               type: "uint256",
             },
           ],
@@ -622,12 +676,12 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "mineNftId",
+              name: "wanted",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "otherNftId",
+              name: "proposed",
               type: "uint256",
             },
           ],
@@ -640,23 +694,16 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "uint256",
-              name: "mineNftId",
+              name: "proposed",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "otherNftId",
+              name: "wanted",
               type: "uint256",
             },
           ],
           name: "removeExchange",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "renounceOwnership",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -807,19 +854,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "transferOwnership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "uint256",
               name: "_tokenId",
               type: "uint256",
@@ -836,7 +870,20 @@ const deployedContracts = {
           type: "function",
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        approve: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        balanceOf: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        getApproved: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        isApprovedForAll: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        name: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        ownerOf: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        safeTransferFrom: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        setApprovalForAll: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        supportsInterface: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        symbol: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        tokenURI: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        transferFrom: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      },
     },
   },
 } as const;

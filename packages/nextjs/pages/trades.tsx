@@ -27,10 +27,10 @@ const Trades = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Trade NFTs</h1>
-
+     <h1 className="text-4xl font-bold">Trade of NFTs</h1>
+      <br />
       <div className="mb-8">
-        <h2 className="text-xl font-bold mb-2">Create NFT</h2>
+        <h2 className="text-2xl font-bold mb-2">Create NFT</h2>
         <input
           className="p-2 m-2 border rounded"
           type="text"
@@ -72,7 +72,7 @@ const Trades = () => {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold mb-2">Manage Trades</h2>
+        <h2 className="text-2xl font-bold mb-2">Manage Trades</h2>
         <div className="flex justify-between items-center mt-4">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
