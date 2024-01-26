@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract LuxuryWatch is ERC721 {
-	uint256 private _tokenIds;
+	uint256 private _tokenIds = 0;
 	/*____________Structure definitions_________________*/
 	struct Watch {
 		string brand;
@@ -15,22 +15,25 @@ contract LuxuryWatch is ERC721 {
 		string serialNumber;
 		uint256 price;
 		string uriMetadata;
+		uint256 id;
+	}
+	struct Exchange{
+		uint256 exchangeWith;
+		address proposedBy;
+		bool progress;
 	}
 
-    struct Exchange{
-        Watch first;
-        Watch second;
-    }
-	/*____________Mapping definitions_________________*/	
-	// Arrays containing the watch nft
-	mapping(uint256 => Watch) private watchInfo;
-	// Array containing the exchanges propositions
-	mapping(uint256 => uint256) private exchanges;
-	// Arry containing the number of owner for each nft
-	mapping(uint256 => uint256) private nbOwners;
-	// Arry containing all nftID owned by an address
-	mapping(address => uint256[]) private nftOwnedBy;
 
+	/*____________Mapping definitions_________________*/	
+	// Array containing the watch nft
+	mapping(uint256 => Watch) private watchInfo;
+	// Array containing the number of owner for each nft
+	mapping(uint256 => uint256) private nbOwners;
+	// Array containing all nftID owned by an address
+	mapping(address => uint256[]) private nftOwnedBy;
+	//Array with an exchange for each nft 
+	mapping(uint256 => Exchange) private exchanges;
+	
 	/*____________Error definitions_________________*/	
 	error Unauthorized(address caller);
 	error PriceTooLow(uint256 requestedPrice, uint256 currentPrice);
@@ -48,8 +51,8 @@ contract LuxuryWatch is ERC721 {
 		string serialNumber
 	);
 	event ExchangeProposed(uint256 mineNFT, uint256 otherNFT);
-	event ExchangeAccepted(uint256 mineNFT, uint256 otherNFT);
-	event ExchangeRefused(uint256 mineNFT, uint256 otherNFT);
+	event ExchangeAccepted(uint256 id);
+	event ExchangeRefused(uint256 id);
 	event ownerChanged(address indexed newOwner);
 
 	// Constructor
@@ -65,18 +68,8 @@ contract LuxuryWatch is ERC721 {
 		require(ownerOf(nft) == msg.sender,"You are not the owner of this NFT");
 		_;
 	}
-	modifier NFTavailable(uint256 nft){
-		require(exchanges[nft] == 0, "NFT is already in an exchange");
-		_;
-	}
-	modifier NFTbusy(uint256 nft){
-		require(exchanges[nft] != 0, "NFT is not in an exchange");
-		_;
-	}
 	
 	/*____________Functions definitions_________________*/
-
-	/*____________Functions for the exchange_________________*/
 
 	/**
 	 *  Function to create a nft
@@ -93,8 +86,10 @@ contract LuxuryWatch is ERC721 {
 		uint256 _price,
 		string memory _metadataURI
 	) public {
+		
 		// Incrementation of the id token
 		_tokenIds++;
+
 		// Minting of our new nft
 		_mint(msg.sender, _tokenIds);
 
@@ -104,16 +99,20 @@ contract LuxuryWatch is ERC721 {
 			model: _model,
 			serialNumber: _serialNumber,
 			price: _price,
-			uriMetadata: _metadataURI
+			uriMetadata: _metadataURI,
+			id: _tokenIds
 		});
 
 		// Save content of the NFT in the contract memory
 		watchInfo[_tokenIds] = newWatch;
-		// Set exchange to current NFT to 0
-		exchanges[_tokenIds] = 0;
 		// Set number of owner for the nft to 1
 		nbOwners[_tokenIds] = 1;
 		nftOwnedBy[msg.sender].push(_tokenIds);
+
+		// Set the 
+		exchanges[_tokenIds].progress = false;
+		
+
 		// Emit
 		emit WatchNFTCreated(
 			msg.sender,
@@ -124,35 +123,24 @@ contract LuxuryWatch is ERC721 {
 		);
 	}
 
-	/**
-	 * Function to propose an exchange between two NFT
-	 * @param proposed NFT I want to exchange
-	 * @param wanted NFT I want
-	 */
-	function proposeExchange(uint256 proposed, uint256 wanted) 
-	myNFT(proposed) 
-	notMyNFT(wanted) 
-	NFTavailable(proposed)  
-	NFTavailable(wanted) 
-	public {
-		exchanges[wanted] = proposed;
+	/*____________Functions for the exchange_________________*/
+
+	function proposeExchange(uint256 proposed, uint256 wanted) public {
+		exchanges[wanted].progress = true;
+		exchanges[wanted].exchangeWith = proposed;
+		exchanges[wanted].proposedBy = msg.sender;
+
+		exchanges[wanted].progress = true;
+		exchanges[wanted].exchangeWith = wanted;
+		exchanges[wanted].proposedBy = msg.sender;
 
 		approve(ownerOf(wanted), proposed);
-		emit ExchangeProposed(proposed, wanted);
+
 	}
 
-	/**
-	 * Function to accept an exchange
-	 * @param wanted NFT the other want
-	 * @param proposed NFT the other proposed to me
-	 */
-	function acceptExchange(uint256 wanted, uint256 proposed)
-	myNFT(proposed) 
-	notMyNFT(wanted) 
-	NFTbusy(proposed)  
-	NFTbusy(wanted) 
-	public {
-
+	function acceptExchange(uint256 proposed, uint256 wanted) public{
+		exchanges[wanted].progress = false;
+		exchanges[proposed].progress = false;
 		address me = ownerOf(wanted);
 		address other = ownerOf(proposed);
 
@@ -161,68 +149,50 @@ contract LuxuryWatch is ERC721 {
 		safeTransferFrom(me, other, wanted);
 		safeTransferFrom(other, me, proposed);
 
-		exchanges[wanted] = 0;
-		exchanges[proposed] = 0;
-		nbOwners[wanted] += 1;
-		nbOwners[proposed] += 1;
-
 		removeNFTFromCollection(proposed, other);
 		removeNFTFromCollection(wanted, me);
 
 		nftOwnedBy[me].push(proposed);
 		nftOwnedBy[other].push(wanted);
-
-		emit ExchangeAccepted(wanted, proposed);
 	}
 
-	/**
-	 * Remove proposition
-	 * @param proposed mine nft id
-	 * @param wanted the other nft id
-	 */
-	function removeExchange(uint256 proposed, uint256 wanted) 
-	myNFT(proposed) 
-	notMyNFT(wanted) 
-	NFTbusy(proposed)  
-	NFTbusy(wanted)
-	public {
-	
-		exchanges[wanted] = 0;
+	function removeExchange(uint256 proposed, uint256 wanted) public{
+		exchanges[wanted].progress = false;
+		exchanges[proposed].progress = false;
 
 		approve(address(0), proposed);
 	}
 
-	/**
-	 * Function call to refuse Exchange
-	 * @param wanted mine nft id
-	 * @param proposed the other nft id
-	 */
-	function refuseExchange(uint256 wanted, uint256 proposed) 
-	myNFT(proposed) 
-	notMyNFT(wanted) 
-	NFTbusy(proposed)  
-	NFTbusy(wanted)
-	public {
-
-		exchanges[wanted] = 0;
-
-		emit ExchangeRefused(wanted, proposed);
+	function refuseExchange(uint256 proposed, uint256 wanted) public{
+		exchanges[wanted].progress = false;
+		exchanges[proposed].progress = false;
 	}
 
-	/**
-	 * Function to update metadata
-	 * @param _tokenId id of the NFT to update
-	 * @param _newMetadataURI String containing the new metadatas
-	 */
-	function updateMetadataURI(
-		uint256 _tokenId,
-		string memory _newMetadataURI
-	) public {
-		if (ownerOf(_tokenId) != msg.sender)
-			revert NotTokenOwner(msg.sender, _tokenId);
-		watchInfo[_tokenId].uriMetadata = _newMetadataURI;
+	function getExchangesProposedBy(address owner) public view returns(Exchange[] memory){
+		uint256 nbNFT = nftOwnedBy[owner].length;
+		uint256 count = 0;
+		Exchange[] memory exchangesProposedBy = new Exchange[](nbNFT);
+		for(uint256 i = 0; i < nbNFT; i++){
+			uint256 currentNft = nftOwnedBy[owner][i]; 
+			if(exchanges[currentNft].proposedBy == msg.sender && exchanges[currentNft].progress){
+				exchangesProposedBy[count++] = exchanges[currentNft];
+			}
+		}
+		return exchangesProposedBy;
 	}
 
+	function getExchangesFor(address owner) public view returns(Exchange[] memory){
+		uint256 nbNFT = nftOwnedBy[owner].length;
+		uint256 count = 0;
+		Exchange[] memory exchangesProposedBy = new Exchange[](nbNFT);
+		for(uint256 i = 0; i < nbNFT; i++){
+			uint256 currentNft = nftOwnedBy[owner][i]; 
+			if(exchanges[currentNft].proposedBy != msg.sender && exchanges[currentNft].progress){
+				exchangesProposedBy[count++] = exchanges[currentNft];
+			}
+		}
+		return exchangesProposedBy;
+	}
 
 	/*____________Functions utils_________________*/
 	/**
@@ -244,11 +214,10 @@ contract LuxuryWatch is ERC721 {
 				nftOwnedBy[owner][i] = nftOwnedBy[owner][i+1];
 			}
         }
-		if(found || nftOwnedBy[owner][numberOfNFT] == nft){
+		if(found || nftOwnedBy[owner][numberOfNFT-1] == nft){
 			nftOwnedBy[owner].pop();
 		}
 	}
-
 
 	/**
 	 * @dev Retourne tous les tokenIds possédés par une adresse donnée.
@@ -275,19 +244,18 @@ contract LuxuryWatch is ERC721 {
 		return tokensInfo;
 	}
 
-
     /**
      * Function that return an array with all watches created
      */
     function getAllWatches() public view returns(Watch[] memory){
         Watch[] memory tokensInfo = new Watch[](_tokenIds);
-		for (uint256 i = 0; i < _tokenIds; i++) {
-			tokensInfo[i] = watchInfo[i];
+		for (uint256 i = 1; i <= _tokenIds; i++) {
+			tokensInfo[i-1] = watchInfo[i];
 		}
 		return tokensInfo;
     }
 
-	function getExchangeOfOwner(address owner) public view returns(Exchange[] memory){
+	/*function getExchangesOfOwner(address owner) public view returns(Exchange[] memory){
 		uint256[] memory nfts = getTokensOfOwner(owner);
 		uint count = nfts.length;
 		// Count how many nfts are in exchange
@@ -312,6 +280,10 @@ contract LuxuryWatch is ERC721 {
 			}
 		}
 		return temp_exchanges;
+	}*/
+
+	function getNumberNftOwnedBy(address owner) public view returns(uint256){
+		return nftOwnedBy[owner].length;
 	}
 
 
