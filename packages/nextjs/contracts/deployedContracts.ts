@@ -7,98 +7,12 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     LuxuryWatch: {
-      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       abi: [
         {
           inputs: [],
           stateMutability: "nonpayable",
           type: "constructor",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "available",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "required",
-              type: "uint256",
-            },
-          ],
-          name: "InsufficientFunds",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "caller",
-              type: "address",
-            },
-          ],
-          name: "NotOwner",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "caller",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-          ],
-          name: "NotTokenOwner",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestedPrice",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "currentPrice",
-              type: "uint256",
-            },
-          ],
-          name: "PriceTooLow",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-          ],
-          name: "TokenNotExist",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "caller",
-              type: "address",
-            },
-          ],
-          name: "Unauthorized",
-          type: "error",
         },
         {
           anonymous: false,
@@ -156,7 +70,13 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "uint256",
-              name: "id",
+              name: "proposed",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "wanted",
               type: "uint256",
             },
           ],
@@ -169,13 +89,13 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "uint256",
-              name: "mineNFT",
+              name: "proposed",
               type: "uint256",
             },
             {
               indexed: false,
               internalType: "uint256",
-              name: "otherNFT",
+              name: "wanted",
               type: "uint256",
             },
           ],
@@ -188,11 +108,36 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "uint256",
-              name: "id",
+              name: "proposed",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "wanted",
               type: "uint256",
             },
           ],
           name: "ExchangeRefused",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "proposed",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "wanted",
+              type: "uint256",
+            },
+          ],
+          name: "ExchangeRemoved",
           type: "event",
         },
         {
@@ -417,116 +362,6 @@ const deployedContracts = {
               internalType: "address",
               name: "",
               type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "bool",
-              name: "by",
-              type: "bool",
-            },
-          ],
-          name: "getExchanges",
-          outputs: [
-            {
-              components: [
-                {
-                  components: [
-                    {
-                      internalType: "string",
-                      name: "brand",
-                      type: "string",
-                    },
-                    {
-                      internalType: "string",
-                      name: "model",
-                      type: "string",
-                    },
-                    {
-                      internalType: "string",
-                      name: "serialNumber",
-                      type: "string",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "price",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "string",
-                      name: "uriMetadata",
-                      type: "string",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "id",
-                      type: "uint256",
-                    },
-                  ],
-                  internalType: "struct LuxuryWatch.Watch",
-                  name: "exchangeWith",
-                  type: "tuple",
-                },
-                {
-                  components: [
-                    {
-                      internalType: "string",
-                      name: "brand",
-                      type: "string",
-                    },
-                    {
-                      internalType: "string",
-                      name: "model",
-                      type: "string",
-                    },
-                    {
-                      internalType: "string",
-                      name: "serialNumber",
-                      type: "string",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "price",
-                      type: "uint256",
-                    },
-                    {
-                      internalType: "string",
-                      name: "uriMetadata",
-                      type: "string",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "id",
-                      type: "uint256",
-                    },
-                  ],
-                  internalType: "struct LuxuryWatch.Watch",
-                  name: "currentWatch",
-                  type: "tuple",
-                },
-                {
-                  internalType: "address",
-                  name: "proposedBy",
-                  type: "address",
-                },
-                {
-                  internalType: "bool",
-                  name: "progress",
-                  type: "bool",
-                },
-              ],
-              internalType: "struct LuxuryWatch.Exchange[]",
-              name: "",
-              type: "tuple[]",
             },
           ],
           stateMutability: "view",
@@ -1104,20 +939,7 @@ const deployedContracts = {
           type: "function",
         },
       ],
-      inheritedFunctions: {
-        approve: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        balanceOf: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        getApproved: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        isApprovedForAll: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        name: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        ownerOf: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        safeTransferFrom: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        setApprovalForAll: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        supportsInterface: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        symbol: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        tokenURI: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        transferFrom: "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-      },
+      inheritedFunctions: {},
     },
   },
 } as const;

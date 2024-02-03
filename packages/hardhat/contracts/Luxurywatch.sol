@@ -133,10 +133,7 @@ contract LuxuryWatch is ERC721 {
 	* @param wanted id of the wanted token
 	*/
 	function proposeExchange(uint256 proposed, uint256 wanted)
-	myNFT(proposed)
-	notMyNFT(wanted)
-	NFTNotInExchange(proposed)
-	NFTNotInExchange(wanted)
+
 	external {
 		_exchanges[wanted].progress = true;
 		_exchanges[wanted].exchangeWith = _watchInfo[proposed];
@@ -157,11 +154,7 @@ contract LuxuryWatch is ERC721 {
 	* @param proposed id of the proposed token
 	* @param wanted id of the wanted token
 	*/
-	function acceptExchange(uint256 proposed, uint256 wanted) 
-	myNFT(wanted)
-	notMyNFT(proposed)
-	NFTInExchange(proposed)
-	NFTInExchange(wanted)
+	function acceptExchange(uint256 proposed, uint256 wanted)
 	external{
 		
 		address me = ownerOf(wanted);
@@ -195,10 +188,6 @@ contract LuxuryWatch is ERC721 {
 	* @param wanted id of the wanted token
 	*/
 	function removeExchange(uint256 proposed, uint256 wanted) 
-	myNFT(proposed)
-	notMyNFT(wanted)
-	NFTInExchange(proposed)
-	NFTInExchange(wanted)
 	external{
 		// Change state of the both nfts
 		_exchanges[wanted].progress = false;
@@ -215,12 +204,7 @@ contract LuxuryWatch is ERC721 {
 	* @param proposed id of the proposed token
 	* @param wanted id of the wanted token
 	*/
-	function refuseExchange(uint256 proposed, uint256 wanted) 
-	myNFT(wanted)
-	notMyNFT(proposed)
-	NFTInExchange(proposed)
-	NFTInExchange(wanted)
-	external{
+	function refuseExchange(uint256 proposed, uint256 wanted) external{
 		_exchanges[wanted].progress = false;
 		_exchanges[proposed].progress = false;
 

@@ -1,0 +1,22 @@
+wallet sur lequel j'ai deployé le 1st contract --> 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+nouvelle 0x5FbDB2315678afecb367f032d93F642f6
+nft ex 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707
+
+
+
+---------------------------------------------------------
+<div className="flex justify-between items-center mt-4">
+<button
+  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+  onClick={() => handleExchange("propose")}
+>
+
+  Accept Exchange
+</button>
+<button
+  className="bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+  onClick={() => handleExchange("refuse")}
+>
+  Refuse Exchange
+</button>
+</div>
